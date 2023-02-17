@@ -1,7 +1,8 @@
 # skriptfabrik/charts
 
-[![Continuous Integration](https://github.com/skriptfabrik/charts/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/skriptfabrik/charts/actions/workflows/continuous_integration.yml)
-[![Release](https://github.com/skriptfabrik/charts/actions/workflows/release.yml/badge.svg)](https://github.com/skriptfabrik/charts/actions/workflows/release.yml)
+[![continuous-integration](https://github.com/skriptfabrik/charts/actions/workflows/ci.yaml/badge.svg)](https://github.com/skriptfabrik/charts/actions/workflows/ci.yaml)
+[![release](https://github.com/skriptfabrik/charts/actions/workflows/release.yaml/badge.svg)](https://github.com/skriptfabrik/charts/actions/workflows/release.yaml)
+[![pages-build-deployment](https://github.com/skriptfabrik/charts/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/skriptfabrik/charts/actions/workflows/pages/pages-build-deployment)
 
     skriptfabrik Helm Charts
 
