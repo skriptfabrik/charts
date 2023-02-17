@@ -3,6 +3,19 @@ entries:
   sentry-relay:
   - apiVersion: v2
     appVersion: 23.2.0
+    created: "2023-02-17T14:04:54.533785927Z"
+    description: Sentry event forwarding and ingestion service
+    digest: 0646247a78ca786ec4af37ad24a8d97b4dbf2369ee245f7be70fcf321684e695
+    maintainers:
+    - name: skriptfabrik
+      url: https://github.com/skriptfabrik
+    name: sentry-relay
+    type: application
+    urls:
+    - https://github.com/skriptfabrik/charts/releases/download/sentry-relay-0.1.1/sentry-relay-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 23.2.0
     created: "2023-02-17T13:25:57.714138303Z"
     description: Sentry event forwarding and ingestion service
     digest: 5cde6060f33c6cd24523a0c715d60ba8f46c577fdaf3c9b2b5d7601c68d6f04a
@@ -14,4 +27,4 @@ entries:
     urls:
     - https://github.com/skriptfabrik/charts/releases/download/sentry-relay-0.1.0/sentry-relay-0.1.0.tgz
     version: 0.1.0
-generated: "2023-02-17T13:25:57.714149503Z"
+generated: "2023-02-17T14:04:54.533811427Z"
