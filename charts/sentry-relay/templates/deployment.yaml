@@ -67,5 +67,5 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: sentry-relay
+            name: {{ include "sentry-relay.fullname" . }}
             defaultMode: 0644
