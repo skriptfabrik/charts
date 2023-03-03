@@ -1,3 +1,5 @@
+** Please be patient while the chart is being deployed **
+
 Get the application URL by running these commands:
 {{- if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "sentry-relay.fullname" . }})

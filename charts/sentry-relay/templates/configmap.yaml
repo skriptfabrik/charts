@@ -8,4 +8,4 @@ data:
   config.yml: |-
     relay:
       mode: {{ .Values.config.mode }}
-      host: {{ .Values.config.host }}
+      host: {{ .Values.config.host | quote }}
