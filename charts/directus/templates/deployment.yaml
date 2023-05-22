@@ -1,0 +1,331 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "directus.fullname" . }}
+  labels:
+    {{- include "directus.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "directus.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "directus.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "directus.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: "PORT"
+              value: {{ .Values.service.port | quote }}
+            - name: "PUBLIC_URL"
+              value: {{ include "directus.publicURL" . | quote }}
+            - name: "LOG_LEVEL"
+              value: {{ .Values.directus.general.logLevel | quote }}
+            - name: "LOG_STYLE"
+              value: {{ .Values.directus.general.logStyle | quote }}
+            - name: "MAX_PAYLOAD_SIZE"
+              value: {{ .Values.directus.general.maxPayloadSize | quote }}
+            - name: "DB_CLIENT"
+              value: {{ .Values.directus.database.client | quote }}
+          {{- if has .Values.directus.database.client (list "pg" "postgres" "mysql" "oracledb" "mssql") }}
+            - name: "DB_HOST"
+              value: {{ .Values.directus.database.host | quote }}
+            - name: "DB_PORT"
+              value: {{ .Values.directus.database.port | quote }}
+            - name: "DB_DATABASE"
+              value: {{ .Values.directus.database.database | quote }}
+            - name: "DB_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "DB_USER"
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "DB_PASSWORD"
+          {{- end }}
+          {{- if eq "sqlite3" .Values.directus.database.client }}
+            - name: "DB_FILENAME"
+              value: ./database/data.db
+          {{- end }}
+            - name: "KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "KEY"
+            - name: "SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "SECRET"
+          {{- if .Values.directus.cors.enabled }}
+            - name: "CORS_ENABLED"
+              value: "true"
+          {{- end }}
+          {{- if .Values.directus.rateLimiting.enabled }}
+            - name: "RATE_LIMITER_ENABLED"
+              value: "true"
+            - name: "RATE_LIMITER_STORE"
+              value: {{ .Values.directus.rateLimiting.store | quote }}
+          {{- if eq "redis" .Values.directus.rateLimiting.store }}
+            - name: "RATE_LIMITER_REDIS"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "RATE_LIMITER_REDIS"
+          {{- end }}
+          {{- if eq "memcache" .Values.directus.rateLimiting.store }}
+            - name: "RATE_LIMITER_MEMCACHE"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "RATE_LIMITER_MEMCACHE"
+          {{- end }}
+          {{- end }}
+          {{- if .Values.directus.cache.enabled }}
+            - name: "CACHE_ENABLED"
+              value: "true"
+            - name: "CACHE_STORE"
+              value: {{ .Values.directus.cache.store | quote }}
+          {{- if eq "redis" .Values.directus.cache.store }}
+            - name: "CACHE_REDIS"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "CACHE_REDIS"
+          {{- end }}
+          {{- if eq "memcache" .Values.directus.cache.store }}
+            - name: "CACHE_MEMCACHE"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "CACHE_MEMCACHE"
+          {{- end }}
+          {{- end }}
+            - name: "STORAGE_LOCATIONS"
+              value: {{ .Values.directus.fileStorage.locations | join "," | quote }}
+          {{- if has "local" .Values.directus.fileStorage.locations }}
+            - name: "STORAGE_LOCAL_DRIVER"
+              value: local
+          {{- end }}
+          {{- if has "gcs" .Values.directus.fileStorage.locations }}
+            - name: "STORAGE_GCS_DRIVER"
+              value: gcs
+            - name: "STORAGE_GCS_KEY_FILENAME"
+              value: ./secrets/gcs/credentials.json
+            - name: "STORAGE_GCS_BUCKET"
+              value: {{ .Values.directus.fileStorage.gcs.bucket | quote }}
+          {{- end }}
+          {{- if .Values.directus.authentication.providers }}
+            - name: "AUTH_PROVIDERS"
+              value: {{ .Values.directus.authentication.providers | join "," | quote }}
+          {{- if .Values.directus.authentication.disableDefault }}
+            - name: "AUTH_DISABLE_DEFAULT"
+              value: "true"
+          {{- end }}
+          {{- if has "google" .Values.directus.authentication.providers }}
+            - name: "AUTH_GOOGLE_DRIVER"
+              value: "openid"
+            - name: "AUTH_GOOGLE_CLIENT_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "AUTH_GOOGLE_CLIENT_ID"
+            - name: "AUTH_GOOGLE_CLIENT_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "AUTH_GOOGLE_CLIENT_SECRET"
+            - name: "AUTH_GOOGLE_ISSUER_URL"
+              value: https://accounts.google.com/.well-known/openid-configuration
+            - name: "AUTH_GOOGLE_IDENTIFIER_KEY"
+              value: email
+            - name: "AUTH_GOOGLE_ICON"
+              value: google
+            - name: "AUTH_GOOGLE_LABEL"
+              value: Google
+            - name: "AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION"
+              value: {{ .Values.directus.authentication.google.allowPublicRegistration | quote }}
+          {{- if .Values.directus.authentication.google.defaultRoleID }}
+            - name: "AUTH_GOOGLE_DEFAULT_ROLE_ID"
+              value: {{ .Values.directus.authentication.google.defaultRoleID | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.directus.adminAccount.enabled }}
+            - name: "ADMIN_EMAIL"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "ADMIN_EMAIL"
+            - name: "ADMIN_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "ADMIN_PASSWORD"
+          {{- end }}
+          {{- if not .Values.directus.telemetry.enabled }}
+            - name: "TELEMETRY"
+              value: "false"
+          {{- end }}
+          {{- range $name, $value := .Values.directus.extra.env }}
+          {{- if not (empty $value) }}
+            - name: {{ $name | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- $secretName := include "directus.secretName" . }}
+          {{- range $name, $value := .Values.directus.extra.secret }}
+            {{- if not (empty $value) }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $name | quote }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /server/ping
+              port: http
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          readinessProbe:
+            httpGet:
+              path: /server/ping
+              port: http
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          volumeMounts:
+          {{- if or (has "local" .Values.directus.fileStorage.locations) (.Values.securityContext.readOnlyRootFilesystem) }}
+            - mountPath: /directus/database
+              name: {{ include "directus.fullname" . }}-local
+              subPath: database
+            - mountPath: /directus/extensions
+              name: {{ include "directus.fullname" . }}-local
+              subPath: extensions
+            - mountPath: /directus/uploads
+              name: {{ include "directus.fullname" . }}-local
+              subPath: uploads
+          {{- end }}
+          {{- if has "gcs" .Values.directus.fileStorage.locations }}
+            - mountPath: /directus/secrets/gcs
+              name: {{ include "directus.fullname" . }}-gcs
+              readOnly: true
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      initContainers:
+        - name: {{ .Chart.Name }}-bootstrap
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "node", "/directus/cli.js", "bootstrap" ]
+          env:
+            - name: "DB_CLIENT"
+              value: {{ .Values.directus.database.client | quote }}
+          {{- if has .Values.directus.database.client (list "pg" "postgres" "mysql" "oracledb" "mssql") }}
+            - name: "DB_HOST"
+              value: {{ .Values.directus.database.host | quote }}
+            - name: "DB_PORT"
+              value: {{ .Values.directus.database.port | quote }}
+            - name: "DB_DATABASE"
+              value: {{ .Values.directus.database.database | quote }}
+            - name: "DB_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "DB_USER"
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "DB_PASSWORD"
+          {{- end }}
+          {{- if eq "sqlite3" .Values.directus.database.client }}
+            - name: "DB_FILENAME"
+              value: ./database/data.db
+          {{- end }}
+          {{- if .Values.directus.adminAccount.enabled }}
+            - name: "ADMIN_EMAIL"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "ADMIN_EMAIL"
+            - name: "ADMIN_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "ADMIN_PASSWORD"
+          {{- end }}
+          {{- if not .Values.directus.telemetry.enabled }}
+            - name: "TELEMETRY"
+              value: "false"
+          {{- end }}
+          volumeMounts:
+          {{- if or (has "local" .Values.directus.fileStorage.locations) (.Values.securityContext.readOnlyRootFilesystem) }}
+            - mountPath: /directus/database
+              name: {{ include "directus.fullname" . }}-local
+              subPath: database
+            - mountPath: /directus/extensions
+              name: {{ include "directus.fullname" . }}-local
+              subPath: extensions
+            - mountPath: /directus/uploads
+              name: {{ include "directus.fullname" . }}-local
+              subPath: uploads
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if or (has "local" .Values.directus.fileStorage.locations) (.Values.securityContext.readOnlyRootFilesystem) }}
+        - name: {{ include "directus.fullname" . }}-local
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "directus.fullname" .) }}
+        {{- else }}
+          emptyDir: { }
+        {{- end }}
+      {{- end }}
+      {{- if has "gcs" .Values.directus.fileStorage.locations }}
+        - name: {{ include "directus.fullname" . }}-gcs
+          secret:
+            secretName: {{ include "directus.fullname" . }}
+            items:
+              - key: STORAGE_GCS_KEY
+                path: credentials.json
+      {{- end }}
