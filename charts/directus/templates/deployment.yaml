@@ -44,6 +44,8 @@ spec:
               value: {{ .Values.directus.general.logStyle | quote }}
             - name: "MAX_PAYLOAD_SIZE"
               value: {{ .Values.directus.general.maxPayloadSize | quote }}
+            - name: "ROOT_REDIRECT"
+              value: {{ include "directus.rootRedirect" . | quote }}
             - name: "DB_CLIENT"
               value: {{ .Values.directus.database.client | quote }}
           {{- if has .Values.directus.database.client (list "pg" "postgres" "mysql" "oracledb" "mssql") }}

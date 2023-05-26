@@ -84,3 +84,20 @@ Create the public URL
 {{- print "/" $basePath }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the root redirect
+*/}}
+{{- define "directus.rootRedirect" -}}
+{{- $basePath := (trimPrefix "/" (default "/" .Values.directus.general.basePath)) }}
+{{- if .Values.ingress.enabled }}
+{{- $host := (index .Values.ingress.hosts 0).host }}
+{{- if .Values.ingress.tls }}
+{{- printf "https://%s/%s/admin" $host (trimSuffix "/" $basePath) }}
+{{- else }}
+{{- printf "http://%s/%s/admin" $host (trimSuffix "/" $basePath) }}
+{{- end }}
+{{- else }}
+{{- print "./admin" }}
+{{- end }}
+{{- end }}
