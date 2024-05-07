@@ -218,6 +218,8 @@ spec:
               name: {{ include "directus.fullname" . }}-gcs
               readOnly: true
           {{- end }}
+            - mountPath: /home/node/.pm2
+              name: {{ include "directus.fullname" . }}-pm2
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       initContainers:
@@ -312,3 +314,5 @@ spec:
               - key: STORAGE_GCS_KEY
                 path: credentials.json
       {{- end }}
+        - name: {{ include "directus.fullname" . }}-pm2
+          emptyDir: { }
