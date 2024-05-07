@@ -162,12 +162,13 @@ The configuration of the Directus application itself is based on the [config opt
 
 #### Cache
 
-| Parameter                 | Description                        | Default  |
-|---------------------------|------------------------------------|----------|
-| `directus.cache.enabled`  | Whether data caching is enabled    | `false`  |
-| `directus.cache.store`    | Where to store the cache data      | `memory` |
-| `directus.cache.redis`    | Redis connection string            | `""`     |
-| `directus.cache.memcache` | Location of your memcache instance | `""`     |
+| Parameter                  | Description                                                            | Default  |
+|----------------------------|------------------------------------------------------------------------|----------|
+| `directus.cache.enabled`   | Whether data caching is enabled                                        | `false`  |
+| `directus.cache.autoPurge` | Automatically purge the data cache on actions that manipulate the data | `false`  |
+| `directus.cache.store`     | Where to store the cache data                                          | `memory` |
+| `directus.cache.redis`     | Redis connection string                                                | `""`     |
+| `directus.cache.memcache`  | Location of your memcache instance                                     | `""`     |
 
 #### File Storage
 
