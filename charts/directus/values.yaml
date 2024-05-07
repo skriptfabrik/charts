@@ -122,6 +122,7 @@ directus:
     memcache: ""
   cache:
     enabled: false
+    autoPurge: false
     store: memory
     redis: ""
     memcache: ""

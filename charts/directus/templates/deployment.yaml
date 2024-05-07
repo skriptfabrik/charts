@@ -107,6 +107,8 @@ spec:
           {{- if .Values.directus.cache.enabled }}
             - name: "CACHE_ENABLED"
               value: "true"
+            - name: "CACHE_AUTO_PURGE"
+              value: {{ .Values.directus.cache.autoPurge | quote }}
             - name: "CACHE_STORE"
               value: {{ .Values.directus.cache.store | quote }}
           {{- if eq "redis" .Values.directus.cache.store }}
