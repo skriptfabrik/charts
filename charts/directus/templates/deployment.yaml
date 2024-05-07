@@ -70,6 +70,13 @@ spec:
             - name: "DB_FILENAME"
               value: ./database/data.db
           {{- end }}
+          {{- if .Values.directus.redis }}
+            - name: "REDIS"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "directus.secretName" . }}
+                  key: "REDIS"
+          {{- end }}
             - name: "KEY"
               valueFrom:
                 secretKeyRef:
@@ -89,20 +96,6 @@ spec:
               value: "true"
             - name: "RATE_LIMITER_STORE"
               value: {{ .Values.directus.rateLimiting.store | quote }}
-          {{- if eq "redis" .Values.directus.rateLimiting.store }}
-            - name: "RATE_LIMITER_REDIS"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "directus.secretName" . }}
-                  key: "RATE_LIMITER_REDIS"
-          {{- end }}
-          {{- if eq "memcache" .Values.directus.rateLimiting.store }}
-            - name: "RATE_LIMITER_MEMCACHE"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "directus.secretName" . }}
-                  key: "RATE_LIMITER_MEMCACHE"
-          {{- end }}
           {{- end }}
           {{- if .Values.directus.cache.enabled }}
             - name: "CACHE_ENABLED"
@@ -111,20 +104,6 @@ spec:
               value: {{ .Values.directus.cache.autoPurge | quote }}
             - name: "CACHE_STORE"
               value: {{ .Values.directus.cache.store | quote }}
-          {{- if eq "redis" .Values.directus.cache.store }}
-            - name: "CACHE_REDIS"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "directus.secretName" . }}
-                  key: "CACHE_REDIS"
-          {{- end }}
-          {{- if eq "memcache" .Values.directus.cache.store }}
-            - name: "CACHE_MEMCACHE"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "directus.secretName" . }}
-                  key: "CACHE_MEMCACHE"
-          {{- end }}
           {{- end }}
             - name: "STORAGE_LOCATIONS"
               value: {{ .Values.directus.fileStorage.locations | join "," | quote }}

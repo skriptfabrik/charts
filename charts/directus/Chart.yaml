@@ -3,7 +3,7 @@ name: directus
 description: A Helm chart for installing Directus on Kubernetes
 type: application
 version: 0.2.0
-appVersion: "10.0.0"
+appVersion: "10.4.0"
 maintainers:
   - name: skriptfabrik
     url: https://github.com/skriptfabrik
