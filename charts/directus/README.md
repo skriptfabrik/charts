@@ -138,6 +138,12 @@ The configuration of the Directus application itself is based on the [config opt
 | `directus.database.user`     | Database user               | `""`      |
 | `directus.database.password` | Database password           | `""`      |
 
+#### Redis
+
+| Parameter        | Description             | Default |
+|------------------|-------------------------|---------|
+| `directus.redis` | Redis connection string | `""`    |
+
 #### Security
 
 | Parameter                  | Description                       | Default |
@@ -153,12 +159,10 @@ The configuration of the Directus application itself is based on the [config opt
 
 #### Rate Limiting
 
-| Parameter                        | Description                                       | Default  |
-|----------------------------------|---------------------------------------------------|----------|
-| `directus.rateLimiting.enabled`  | Whether to enable rate limiting per IP on the API | `false`  |
-| `directus.rateLimiting.store`    | Where to store the rate limiter counts            | `memory` |
-| `directus.rateLimiting.redis`    | Redis connection string                           | `""`     |
-| `directus.rateLimiting.memcache` | Location of your memcache instance                | `""`     |
+| Parameter                       | Description                                       | Default  |
+|---------------------------------|---------------------------------------------------|----------|
+| `directus.rateLimiting.enabled` | Whether to enable rate limiting per IP on the API | `false`  |
+| `directus.rateLimiting.store`   | Where to store the rate limiter counts            | `memory` |
 
 #### Cache
 
@@ -167,8 +171,6 @@ The configuration of the Directus application itself is based on the [config opt
 | `directus.cache.enabled`   | Whether data caching is enabled                                        | `false`  |
 | `directus.cache.autoPurge` | Automatically purge the data cache on actions that manipulate the data | `false`  |
 | `directus.cache.store`     | Where to store the cache data                                          | `memory` |
-| `directus.cache.redis`     | Redis connection string                                                | `""`     |
-| `directus.cache.memcache`  | Location of your memcache instance                                     | `""`     |
 
 #### File Storage
 

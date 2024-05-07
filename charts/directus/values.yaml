@@ -110,6 +110,7 @@ directus:
     database: ""
     user: ""
     password: ""
+  redis: ""
   security:
     key: ""
     secret: ""
@@ -118,14 +119,10 @@ directus:
   rateLimiting:
     enabled: false
     store: memory
-    redis: ""
-    memcache: ""
   cache:
     enabled: false
     autoPurge: false
     store: memory
-    redis: ""
-    memcache: ""
   fileStorage:
     locations:
       - "local"
