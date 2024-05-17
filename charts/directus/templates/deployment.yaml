@@ -284,6 +284,20 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if or (has "local" .Values.directus.fileStorage.locations) (.Values.securityContext.readOnlyRootFilesystem) }}
+        - name: {{ .Chart.Name }}-extensions
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "sh", "-c", "[ -d /directus/extensions ] && cp -r /directus/extensions/. /mnt/extensions/" ]
+          volumeMounts:
+            - mountPath: /mnt/extensions
+              name: {{ include "directus.fullname" . }}-local
+              subPath: extensions
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
