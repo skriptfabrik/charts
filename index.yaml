@@ -3,6 +3,19 @@ entries:
   directus:
   - apiVersion: v2
     appVersion: 10.4.0
+    created: "2024-05-17T20:14:06.897664014Z"
+    description: A Helm chart for installing Directus on Kubernetes
+    digest: cbdd84bc3c171c8b1875608295cc8f8db988ab672c894d0e3fcd95e2946b7b72
+    maintainers:
+    - name: skriptfabrik
+      url: https://github.com/skriptfabrik
+    name: directus
+    type: application
+    urls:
+    - https://github.com/skriptfabrik/charts/releases/download/directus-0.3.1/directus-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 10.4.0
     created: "2024-05-08T06:14:13.389698525Z"
     description: A Helm chart for installing Directus on Kubernetes
     digest: cbcdc5bec2e7bd442647812a808097c56aeb99f893ef27355513d82e3b4f3f3b
@@ -93,4 +106,4 @@ entries:
     urls:
     - https://github.com/skriptfabrik/charts/releases/download/sentry-relay-0.1.0/sentry-relay-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-08T06:14:13.389723662Z"
+generated: "2024-05-17T20:14:06.897691645Z"
