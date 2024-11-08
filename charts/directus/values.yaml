@@ -125,16 +125,21 @@ directus:
     store: memory
   fileStorage:
     locations:
-      - "local"
+      - local
     gcs:
       key: ""
       bucket: ""
+    chunkedUploads:
+      enabled: false
+      chunkSize: 10mb
+      uploadExpiration: 10m
+      cleanupSchedule: "0 * * * *"
   authentication:
     providers: []
     disableDefault: false
     google:
       clientID: ""
-      clientSecret:
+      clientSecret: ""
       allowPublicRegistration: false
       defaultRoleID: ""
   adminAccount:

@@ -119,6 +119,16 @@ spec:
             - name: "STORAGE_GCS_BUCKET"
               value: {{ .Values.directus.fileStorage.gcs.bucket | quote }}
           {{- end }}
+          {{- if .Values.directus.fileStorage.chunkedUploads.enabled }}
+            - name: "TUS_ENABLED"
+              value: "true"
+            - name: "TUS_CHUNK_SIZE"
+              value: {{ .Values.directus.fileStorage.chunkedUploads.chunkSize | quote }}
+            - name: "TUS_UPLOAD_EXPIRATION"
+              value: {{ .Values.directus.fileStorage.chunkedUploads.uploadExpiration | quote }}
+            - name: "TUS_CLEANUP_SCHEDULE"
+              value: {{ .Values.directus.fileStorage.chunkedUploads.cleanupSchedule | quote }}
+          {{- end }}
           {{- if .Values.directus.authentication.providers }}
             - name: "AUTH_PROVIDERS"
               value: {{ .Values.directus.authentication.providers | join "," | quote }}
