@@ -1,0 +1,23 @@
+
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":disableRateLimiting",
+    ":gitSignOff",
+    ":semanticCommits",
+    ":semanticPrefixChore",
+    ":semanticCommitScopeDisabled"
+  ],
+  "labels": ["dependencies"],
+  "timezone": "Europe/Berlin",
+  "enabledManagers": ["github-actions"],
+  "packageRules": [
+    {
+      "description": "GitHub Actions are updated on Sundays",
+      "matchManagers": ["github-actions"],
+      "addLabels": ["github_actions"],
+      "schedule": ["* * * * 0"]
+    }
+  ]
+}
